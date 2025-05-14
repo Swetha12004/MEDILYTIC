@@ -1,0 +1,418 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-image: url("{{ url_for('static', filename='backgrnd.png') }}");
+        background-size: cover;
+    }
+    .navigation a {
+        margin: 0 15px;
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    main {
+        margin-top: 50px; /* Adds some space between the existing content and the classification forms */
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 0 50px;
+    }
+
+    h1 {
+        font-size: 2.5em;
+        color: #003366;
+        text-align: center;
+        margin-bottom: 20px;
+        font-family: "Roboto","sans-serif";
+
+    }
+
+    .form-container {
+        background-color: white;
+        padding: 30px;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        border-radius: 10px;
+        border: 3px solid #003366;
+        width: 45%;
+        height: 350px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        color: #003366;
+        font-family: "Roboto", sans-serif;
+        font-weight: 800;
+        font-family: "Roboto","sans-serif";
+
+    }
+
+    input[type="text"], input[type="submit"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #003366;
+        border-radius: 5px;
+        font-family: "Roboto","sans-serif";
+
+    }
+
+    input[type="submit"] {
+        background-color: #003366;
+        color: white;
+        cursor: pointer;
+        font-weight: 900;
+        font-size: 1.2em;
+        font-family: "Roboto","sans-serif";
+
+    }
+
+    input[type="submit"]:hover {
+        background-color: #ffcc00;
+        font-family: "Roboto","sans-serif";
+
+    }
+
+    .result {
+        background-color: #fff;
+        border: 3px solid #003366;
+        padding: 10px;
+        border-radius: 10px;
+        text-align: center;
+        font-family: "Roboto","sans-serif";
+
+    }
+
+    .result h3 {
+        color: #003366;
+        font-family: "Roboto","sans-serif";
+
+    }
+    #check-veg {
+        background-color: #003366;
+        color: white;
+        padding: 12px 20px;
+        font-size: 1.2em;
+        font-weight: 800;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        font-family: "Roboto","sans-serif";
+
+    }
+
+    #check-veg:hover {
+        background-color: #ffcc00;
+        color: #003366;
+        font-family: "Roboto","sans-serif";
+
+    }
+    #check-fruit {
+        background-color: #003366;
+        color: white;
+        padding: 12px 20px;
+        font-size: 1.2em;
+        font-weight: 800;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        font-family: "Roboto","sans-serif";
+
+    }
+
+    #check-fruit:hover {
+        background-color: #ffcc00;
+        font-family: "Roboto","sans-serif";
+        color: #003366;
+    }
+    #pcod-info {
+        background: linear-gradient(145deg, #d4e8f2, #ffffff);
+        padding: 50px;
+        margin-top: 50px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .pcod-info-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .pcod-info-content {
+        flex: 1 1 60%;
+        margin-right: 20px;
+        text-align: left;
+        font-family: "Roboto","sans-serif";
+
+    }
+
+    .pcod-info-content h3 {
+        margin-top: 20px;
+        color: #003366;
+        font-size: 1.8em;
+        font-family: "Roboto","sans-serif";
+
+    }
+
+    .pcod-info-content p, .pcod-info-content ul {
+        font-size: 1.1em;
+        color: #000;
+        line-height: 1.8;
+        font-family: "Roboto","sans-serif";
+
+    }
+
+    .pcod-info-content ul li {
+        background-color: #ffcc00;
+        color: #003366;
+        padding: 10px 15px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        font-size: 1.1em;
+        font-family: "Roboto","sans-serif";
+    }
+
+    .pcod-info-image {
+        flex: 1 1 35%;
+        margin-left: 20px;
+    }
+
+    .pcod-info-image img {
+        max-width: 100%;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .pcod-info-image img:hover {
+        transform: scale(1.05);
+    }
+
+    /* Responsive Design */
+    @media screen and (max-width: 768px) {
+        .pcod-info-container {
+            flex-direction: column;
+        }
+
+        .pcod-info-content {
+            margin-right: 0;
+            margin-bottom: 20px;
+        }
+
+        .pcod-info-image {
+            margin-left: 0;
+        }
+    }
+    /* Initial state for scroll-triggered elements */
+    .scroll-trigger {
+        opacity: 0;
+        transform: translateY(50px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    /* Animation class */
+    .scroll-trigger.animate {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .back-to-home {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    .home-button {
+        background-color: #003366;
+        color: white;
+        padding: 30px 30px;
+        text-decoration: none;
+        border-radius: 5px;
+        font-family: "Roboto", sans-serif;
+        font-size: 2em;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    .home-button:hover {
+        background-color: #ffcc00;
+        color: white;
+    }
+
+    #fruit-suggestions {
+        position: absolute;
+        background: white;
+        border: 1px solid #ddd;
+        max-height: 200px;
+        overflow-y: auto;
+        width: 100%;
+        display: none;
+        z-index: 1000;
+    }
+
+    .suggestion {
+        padding: 10px;
+        cursor: pointer;
+    }
+
+    .suggestion:hover {
+        background-color: #f0f0f0;
+    }
+
+    #veg-suggestions {
+        position: absolute;
+        background: white;
+        border: 1px solid #ddd;
+        max-height: 200px;
+        overflow-y: auto;
+        width: 100%;
+        display: none;
+        z-index: 1000;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Existing content section -->
+<section id="pcod-info" class="scroll-trigger">
+    <div class="pcod-info-container">
+        <div class="pcod-info-content"> 
+            <h1>CARDIOVASCULAR FOOD SUITABILITY</h1>                           
+            <h3>Fruits Beneficial for Cardiovascular Health</h3>
+            <ul>
+                <li>Berries (strawberries, blueberries, raspberries)</li>
+                <li>Citrus fruits (oranges, lemons, grapefruits)</li>
+                <li>Apples</li>
+                <li>Kiwi</li>
+            </ul>
+            
+            <h3>Vegetables Beneficial for Cardiovascular Health</h3>
+            <ul>
+                <li>Leafy greens (spinach, kale)</li>
+                <li>Cruciferous vegetables (broccoli, cauliflower)</li>
+                <li>Bell peppers</li>
+                <li>Tomatoes</li>
+            </ul>
+            
+            <p>For optimal cardiovascular health, focus on incorporating these fruits and vegetables into your diet while reducing your intake of sodium, saturated fats, and processed foods.Cardiovascular Disease Food Suitability Checker helps individuals manage heart health by providing guidance on diet choices. Simply input the name of a food, and our advanced machine learning model will assess its impact on cardiovascular health, considering factors such as cholesterol, saturated fats, sodium, and heart-healthy nutrients like fiber and omega-3s. You'll receive instant feedback on whether the food is heart-friendly, should be eaten in moderation, or should be avoided, offering tailored advice to support a heart-healthy lifestyle and reduce risks associated with cardiovascular disease.</p>
+        </div>
+        <div class="pcod-info-image">
+            <img src="https://www.thekeyholeheartclinic.com/wp-content/uploads/2022/07/shutterstock_577957138-1200x675.jpg" alt="Heart-Healthy Fruits and Vegetables" />
+        </div>
+    </div>
+</section>
+
+<!-- Classification section -->
+<main>
+    <!-- Fruit Section on Left -->
+    <div class="form-container scroll-trigger">
+        <h1>FRUITS & VEGETABLES CLASSIFICATION</h1>
+        <form id="fruit-form">
+            <label for="fruit_name">Enter the name of the fruit:</label>
+            <input type="text" id="fruit_name" name="fruit_name" required autocomplete="off">
+            <div id="fruit-suggestions" class="suggestions"></div>
+            <button type="submit" id="check-fruit" class="btn-hover">Check Suitability for Fruit</button>
+            <div class="result">
+                <h3 id="fruit-prediction"></h3>
+            </div>
+        </form>
+    </div>
+    <div class="pcod-info-image">
+        <img src="https://www.theproducemoms.com/wp-content/uploads/2020/02/heart-healthy-fruits-and-veggies-features.jpg" alt="Heart-Healthy Fruits and Vegetables" />
+    </div>
+
+
+    
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(function() {
+        function setupAutocomplete(inputId, suggestionsId) {
+            $(`#${inputId}`).on('input', function() {
+                let query = $(this).val();
+                if (query.length > 1) {
+                    $.getJSON('/autocomplete', { term: query }, function(data) {
+                        let suggestions = '';
+                        data.forEach(function(item) {
+                            suggestions += `<div class="suggestion">${item}</div>`;
+                        });
+                        $(`#${suggestionsId}`).html(suggestions).show();
+                    });
+                } else {
+                    $(`#${suggestionsId}`).hide();
+                }
+            });
+        }
+
+        setupAutocomplete('fruit_name', 'fruit-suggestions');
+        setupAutocomplete('veg-name', 'veg-suggestions');
+
+        // Handle suggestion click (for both fruits and vegetables)
+        $(document).on('click', '.suggestion', function() {
+            let input = $(this).closest('.form-container').find('input[type="text"]');
+            input.val($(this).text());
+            $('.suggestions').hide();
+        });
+
+        // Hide suggestions when clicking outside
+        $(document).on('click', function(event) {
+            if (!$(event.target).closest('.form-container').length) {
+                $('.suggestions').hide();
+            }
+        });
+
+        // Handle fruit form submission
+        $('#fruit-form').on('submit', function(e) {
+            e.preventDefault();
+            let fruitName = $('#fruit_name').val();
+            $.post('/predict', { fruit_name: fruitName }, function(data) {
+                $('#fruit-prediction').text(`Prediction: ${data.prediction}`);
+            });
+        });
+
+        // Handle vegetable form submission
+        $('#veg-form').on('submit', function(e) {
+            e.preventDefault();
+            let vegName = $('#veg-name').val();
+            $.post('/predict', { fruit_name: vegName }, function(data) {
+                $('#veg-prediction').text(`Prediction: ${data.prediction}`);
+            });
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+      let observer = new IntersectionObserver(
+        (entries, observer) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("animate");
+              observer.unobserve(entry.target); // Unobserve once the animation is triggered
+            }
+          });
+        },
+        { threshold: 0.2 } // Trigger when 20% of the section is visible
+      );
+  
+      // Observe both form containers and PCOD section
+      document.querySelectorAll(".scroll-trigger").forEach((element) => {
+        observer.observe(element);
+      });
+    });
+  </script>
+{% endblock %}

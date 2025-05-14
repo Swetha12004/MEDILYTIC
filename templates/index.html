@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XGBoost Classifier</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url("backgrnd.png");
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+                       
+        header {
+            position: absolute;
+            top: 0;
+            padding: 30px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo img {
+            width: auto;
+            height: 100px;
+            padding-right: 100px;
+            margin-left: 50px;
+        }
+
+        .hero-section {
+            width: 100%;
+            padding: 50px 0;
+            background-image: url("Screenshot_2024-1.png");
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin-top: 150px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-image {
+            width: 50%;
+        }
+
+        .hero-image img {
+            max-width: 100%;
+            height: auto;
+            width: 100%;
+            border-radius: 10px;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .hero-image img:hover {
+            transform: scale(1.05);
+        }
+
+        .hero-content {
+            width: 40%;
+            padding: 20px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInContent 1.2s ease-out forwards 0.5s;
+            border-radius: 20px;
+        }
+
+        @keyframes fadeInContent {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-content h1 {
+            font-size: 2.8em;
+            color: #003366;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-content p {
+            font-size: 1.3em;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .text-section {
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 3em;
+            color: #003366;
+            margin: 0;
+        }
+        
+        .form-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 50px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            border: 3px solid #003366;
+            width: 50%;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #003366;
+            font-family: "Roboto", sans-serif;
+            font-weight: 800;
+        }
+
+        input[type="text"], input[type="number"], input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #003366;
+            border-radius: 5px;
+            font-family: "Roboto", sans-serif;
+        }
+
+        input[type="submit"] {
+            background-color: #003366;
+            color: white;
+            cursor: pointer;
+            font-weight: 900;
+            font-size: 1.2em;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #ffcc00;
+            color: #fff;
+        }
+
+        .result {
+            background-color: #fff;
+            border: 3px solid #003366;
+            padding: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .result h3 {
+            color: #003366;
+        }
+
+        .back-to-home {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .home-button {
+            background-color: #003366;
+            color: white;
+            padding: 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-family: "Roboto", sans-serif;
+            font-size: 2em;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .home-button:hover {
+            background-color: #ffcc00;
+            color: white;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <header>
+        <a href="/" class="logo">
+            <img src="{{ url_for('static', filename='Screenshot_2024-04-23_150319-removebg-preview.png') }}" alt="Logo">
+        </a>
+        <nav class="navigation">
+            <a href="homepage1.html"><i class="fas fa-home"></i> HOME</a>
+            <a href="aboutus2.html"><i class="fas fa-info-circle"></i> ABOUT US</a>
+            <a href="homepage1.html"><i class="fas fa-cogs"></i> SERVICES</a>
+            <a href="homepage.html"><i class="fas fa-info-circle"></i> FEATURES</a>
+            <a href="contact_us.html"><i class="fas fa-envelope"></i> CONTACT US</a>
+        </nav>
+    </header>
+    
+    <section class="hero-section">
+        <div class="hero-image">
+            <img src="{{ url_for('static', filename='doctor-removebg-preview.png') }}" alt="Diabetes Health Image">
+        </div>
+        <div class="hero-content">
+            <h1>Is This Food Right for Your Blood Sugar Levels?</h1>
+            <p>Manage your diabetes more effectively by checking if a food is suitable for your blood sugar control. Simply type in the name of the food, and our system will automatically analyze its glycemic index to determine if it fits within your dietary plan. You'll receive a clear answer, helping you make informed decisions about the foods that support your health goals.</p>
+        </div>
+    </section>
+    
+    <div class="text-section">
+        <h1>Diabetic Food Suitability</h1>
+    </div>
+    
+    <div class="form-section">
+        <div class="form-container">
+            <form action="/predict" method="post">
+                <label for="food_name">FOOD NAME:</label>
+                <input type="text" id="food_name" name="food_name" required>
+                <input type="submit" value="PREDICT">
+            </form>
+            <div class="result">
+                <h3>PREDICTION RESULT</h3>
+                <p><strong>Glycemic Index:</strong> {{ glycemic_index }}</p>
+                <p><strong>{{ prediction }}</strong> for diabetes.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script>
+        // JavaScript code to trigger scroll animations
+        const sections = document.querySelectorAll('.form-section, .info-section');
+    
+        window.addEventListener('scroll', function() {
+            sections.forEach(section => {
+                const sectionTop = section.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                if (sectionTop < windowHeight - 100) {
+                    section.classList.add('visible');
+                }
+            });
+        });
+
+        // jQuery Autocomplete Section
+        $(document).ready(function () {
+            $("#food_name").autocomplete({
+                source: function(request, response) {
+                    $.ajax({
+                        url: "/autocomplete",
+                        dataType: "json",
+                        data: {
+                            term: request.term
+                        },
+                        success: function(data) {
+                            console.log("Received suggestions:", data);  // Debug log
+                            response(data);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error in autocomplete:", status, error);  // Debug log
+                        }
+                    });
+                },
+                minLength: 2,
+                select: function(event, ui) {
+                    console.log("Selected item:", ui.item);  // Debug log
+                    $("#food_name").val(ui.item.value);
+                    return false;
+                }
+            });
+        });
+    
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init();
+    </script>
+</body>
+</html>

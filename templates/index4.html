@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XGBoost Classifier</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url("{{ url_for('static', filename='backgrnd.png') }}");
+            background-size: cover;
+        }
+        .navigation a {
+            margin: 0 15px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        main {
+            margin-top:50px; /* To adjust for the fixed header */
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 0 50px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #003366;
+            text-align: center;
+            margin-bottom: 20px;
+            font-family: "Roboto","sans-serif";
+
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            border: 3px solid #003366;
+            width: 45%;
+            height: 350px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #003366;
+            font-family: "Roboto", sans-serif;
+            font-weight: 800;
+            font-family: "Roboto","sans-serif";
+
+        }
+
+        input[type="text"], input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #003366;
+            border-radius: 5px;
+            font-family: "Roboto","sans-serif";
+
+        }
+
+        input[type="submit"] {
+            background-color: #003366;
+            color: white;
+            cursor: pointer;
+            font-weight: 900;
+            font-size: 1.2em;
+            font-family: "Roboto","sans-serif";
+
+        }
+
+        input[type="submit"]:hover {
+            background-color: #ffcc00;
+            font-family: "Roboto","sans-serif";
+
+        }
+
+        .result {
+            background-color: #fff;
+            border: 3px solid #003366;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            font-family: "Roboto","sans-serif";
+
+        }
+
+        .result h3 {
+            color: #003366;
+            font-family: "Roboto","sans-serif";
+
+        }
+        #check-veg {
+    background-color: #003366;
+    color: white;
+    padding: 12px 20px;
+    font-size: 1.2em;
+    font-weight: 800;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-family: "Roboto","sans-serif";
+
+}
+
+#check-veg:hover {
+    background-color: #ffcc00;
+    color: #003366;
+    font-family: "Roboto","sans-serif";
+
+}
+#check-fruit {
+    background-color: #003366;
+    color: white;
+    padding: 12px 20px;
+    font-size: 1.2em;
+    font-weight: 800;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-family: "Roboto","sans-serif";
+
+}
+
+#check-fruit:hover {
+    background-color: #ffcc00;
+    font-family: "Roboto","sans-serif";
+    color: #003366;
+}
+#pcod-info {
+    background: linear-gradient(145deg, #d4e8f2, #ffffff);
+    padding: 50px;
+    margin-top: 50px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.pcod-info-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.pcod-info-content {
+    flex: 1 1 60%;
+    margin-right: 20px;
+    text-align: left;
+    font-family: "Roboto","sans-serif";
+
+}
+
+.pcod-info-content h3 {
+    margin-top: 20px;
+    color: #003366;
+    font-size: 1.8em;
+    font-family: "Roboto","sans-serif";
+
+}
+
+.pcod-info-content p, .pcod-info-content ul {
+    font-size: 1.1em;
+    color: #000;
+    line-height: 1.8;
+    font-family: "Roboto","sans-serif";
+
+}
+
+.pcod-info-content ul li {
+    background-color: #ffcc00;
+    color: #003366;
+    padding: 10px 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+    font-family: "Roboto","sans-serif";
+}
+
+.pcod-info-image {
+    flex: 1 1 35%;
+    margin-left: 20px;
+}
+
+.pcod-info-image img {
+    max-width: 100%;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.pcod-info-image img:hover {
+    transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .pcod-info-container {
+        flex-direction: column;
+    }
+
+    .pcod-info-content {
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+
+    .pcod-info-image {
+        margin-left: 0;
+    }
+}
+/* Initial state for scroll-triggered elements */
+.scroll-trigger {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+/* Animation class */
+.scroll-trigger.animate {
+    opacity: 1;
+    transform: translateY(0);
+}
+.back-to-home {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.home-button {
+    background-color: #003366;
+    color: white;
+    padding: 30px 30px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-family: "Roboto", sans-serif;
+    font-size: 2em;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.home-button:hover {
+    background-color: #ffcc00;
+    color: white;
+}
+
+.suggestions {
+    position: absolute;
+    background: white;
+    border: 1px solid #ddd;
+    max-height: 200px;
+    overflow-y: auto;
+    width: 100%;
+    display: none;
+    z-index: 1000;
+}
+.suggestion {
+    padding: 10px;
+    cursor: pointer;
+}
+.suggestion:hover {
+    background-color: #f0f0f0;
+}
+.content-one h3{
+    font-family: "Roboto","sans-serif";
+    color: #0000;
+}
+</style>
+</head>
+<body>
+    <header>
+        <a href="/" class="logo">
+            <img src="{{ url_for('static', filename='Screenshot_2024-04-23_150319-removebg-preview.png') }}" alt="Your Logo">
+        </a> 
+        <nav class="navigation">
+            <a href="homepage1.html"><i class="fas fa-home"></i> HOME</a>
+            <a href="aboutus2.html"><i class="fas fa-info-circle"></i> ABOUT US</a>
+            <a href="homepage1.html"><i class="fas fa-cogs"></i> SERVICES</a>
+            <a href="homepage.html"><i class="fas fa-info-circle"></i> FEATURES</a>
+            <a href="contact_us.html"><i class="fas fa-envelope"></i> CONTACT US</a>
+        </nav>
+    </header>
+    <section id="pcod-info" class="scroll-trigger">
+        <div class="pcod-info-container">
+            <div class="pcod-info-content">
+                <h1>CANCER FOOD SUITABILITY</h1>                
+                <h3>Fruits Beneficial for Cancer Patients</h3>
+                <ul>
+                    <li>Berries (strawberries, blueberries, raspberries) </li>
+                    <li>Citrus fruits (oranges, lemons, grapefruits)</li>
+                    <li>Apples</li>
+                    <li>Pomegranate </li>
+                </ul>
+                
+                <h3>Vegetables Beneficial for Cancer Patients</h3>
+                <ul>
+                    <li>Cruciferous vegetables (broccoli, cauliflower, Brussels sprouts) </li>
+                    <li>Leafy greens (spinach, kale).</li>
+                    <li>Carrots </li>
+                    <li>Beets </li>
+                </ul>
+                
+                <p>For cancer patients, it is advised to focus on a balanced intake of these beneficial fruits and vegetables while avoiding heavily processed foods and those high in added sugars or unhealthy fats.Cancer Food Suitability Checker is designed to support individuals undergoing cancer treatment by helping them make better dietary decisions. Simply enter the name of a food, and our advanced machine learning model will evaluate its nutritional content, paying close attention to elements like antioxidants, sugar levels, and nutrients that affect immunity and inflammation. Based on this analysis, you'll receive quick feedback on whether the food is beneficial, should be limited, or is best avoided, providing personalized dietary guidance to promote well-being during your cancer treatment and recovery.</p>
+            </div>
+            <div class="pcod-info-image">
+                <img src="https://images.news18.com/ibnlive/uploads/2024/02/world-cancer-day-2024-foods-2024-02-7b1371810c1af3d78a4dfc534a7ba5d5.jpg?impolicy=website&width=640&height=480" alt="Fruits and Vegetables" />
+            </div>
+        </div>
+    </section>
+
+    <main>
+        <div class="form-container scroll-trigger">
+            <h1>FRUIT & VEGETABLES SUITABILITY</h1>
+            <form id="fruit-form">
+                <label for="fruit_name">Enter Food Name:</label>
+                <input type="text" id="fruit_name" name="fruit_name" required>
+                <div id="fruit-suggestions" class="suggestions"></div>
+                <button type="submit" id="check-fruit" class="btn-hover">Check Suitability for Fruit</button>
+                <div class="result">
+                    <h3 id="fruit-prediction"></h3>
+                </div>
+            </form>
+        </div>
+
+        <div class="pcod-info-image">
+            <img src="{{ url_for('static', filename='artificial-grown-meat-flat-composition-with-human-hand-holding-tray-with-plant-based-meat-tubes-vector-illustration.png') }}" alt="Heart-Healthy Fruits and Vegetables" />
+        </div>        
+    </main>
+    
+
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function() {
+            function setupAutocomplete(inputId, suggestionsId) {
+                var $input = $('#' + inputId);
+                var $suggestions = $('#' + suggestionsId);
+
+                $input.on('input', function() {
+                    var query = $(this).val();
+                    if (query.length > 1) {
+                        $.getJSON('/autocomplete', { term: query }, function(data) {
+                            var suggestions = '';
+                            data.forEach(function(item) {
+                                suggestions += '<div class="suggestion">' + item + '</div>';
+                            });
+                            $suggestions.html(suggestions).show();
+                        });
+                    } else {
+                        $suggestions.hide();
+                    }
+                });
+
+                $(document).on('click', '#' + suggestionsId + ' .suggestion', function() {
+                    $input.val($(this).text());
+                    $suggestions.hide();
+                });
+            }
+
+            setupAutocomplete('fruit_name', 'fruit-suggestions');
+            setupAutocomplete('veg-name', 'veg-suggestions');
+
+            function handleFormSubmission(formId, inputId, predictionId) {
+                $('#' + formId).on('submit', function(event) {
+                    event.preventDefault();
+                    let item_name = $('#' + inputId).val();
+                    console.log("Submitting form with value:", item_name);  // Debug log
+                    
+                    $.ajax({
+                        url: '/predict',
+                        method: 'POST',
+                        data: { [inputId]: item_name },
+                        success: function(data) {
+                            console.log("Received prediction data:", data);  // Debug log
+                            if (data.error) {
+                                $('#' + predictionId).text(data.error).removeClass('suitable not-suitable');
+                            } else {
+                                $('#' + predictionId).text(data.prediction)
+                                    .removeClass('suitable not-suitable')
+                                    .addClass(data.prediction === 'Suitable' ? 'suitable' : 'not-suitable');
+                            }
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            console.error("AJAX error:", jqXHR.responseText, textStatus, errorThrown);  // Debug log
+                            $('#' + predictionId).text("An error occurred. Please try again.").removeClass('suitable not-suitable');
+                        }
+                    });
+                });
+            }
+
+            handleFormSubmission('fruit-form', 'fruit_name', 'fruit-prediction');
+            handleFormSubmission('veg-form', 'veg-name', 'veg-prediction');
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          let observer = new IntersectionObserver(
+            (entries, observer) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  entry.target.classList.add("animate");
+                  observer.unobserve(entry.target); // Unobserve once the animation is triggered
+                }
+              });
+            },
+            { threshold: 0.2 } // Trigger when 20% of the section is visible
+          );
+      
+          // Observe both form containers and PCOD section
+          document.querySelectorAll(".scroll-trigger").forEach((element) => {
+            observer.observe(element);
+          });
+        });
+      </script>
+      
+      
+</body>
+</html>

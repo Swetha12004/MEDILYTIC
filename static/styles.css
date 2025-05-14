@@ -1,0 +1,211 @@
+body {
+    font-family: "Roboto", sans-serif;
+    margin: 0;
+    background-color: #F0F8FF;
+    background-image: url('Screenshot (244).png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: #003366;
+}
+
+header {
+    width: 100%;
+    padding: 20px 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(147, 196, 163, 0.4); /* Semi-transparent green background */
+    backdrop-filter: blur(10px); /* Glassy blur effect */
+    -webkit-backdrop-filter: blur(10px); /* Safari support */
+    position: fixed;
+    top: 0;
+    z-index: 2000;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Slightly darker shadow for better visibility */
+    border-radius: 10px; /* Optional: rounded corners for more smoothness */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Optional: light border to enhance the glassy effect */
+}
+
+
+
+
+/* Logo Styling */
+header .logo img {
+    height: 80px; /* Increase the logo height */
+    max-width: 100%; /* Ensure the logo scales down proportionally */
+}
+
+/* Navigation Styling */
+header .navigation {
+    display: flex;
+    align-items: center;
+}
+
+header .navigation a {
+    color: #003366;
+    margin-left: 30px;
+    text-transform: uppercase;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 10px 15px;
+    font-family: "Roboto", sans-serif;
+    transition: color 0.3s ease, border-bottom 0.3s ease;
+    position: relative;
+}
+
+header .navigation a:hover {
+    color: #ffcc00; /* Highlight color on hover */
+}
+
+header .navigation a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    left: 0;
+    bottom: -5px;
+    background-color: #ffcc00; /* Highlight color */
+    transition: width 0.3s ease;
+}
+
+header .navigation a:hover::after {
+    width: 100%;
+}
+
+header .navigation a.active {
+    color: #ffcc00; /* Active link color */
+}
+
+header .navigation a.active::after {
+    width: 100%;
+}
+
+/* Dropdown arrow for services */
+header .navigation a.services-dropdown i.fas.fa-caret-down {
+    margin-left: 5px; /* Space between text and arrow */
+    font-size: 0.9em; /* Slightly smaller than the text */
+    transition: transform 0.3s ease; /* Smooth transition for dropdown */
+}
+
+header .navigation a.services-dropdown:hover i.fas.fa-caret-down {
+    transform: rotate(180deg); /* Rotate the arrow when hovering */
+}
+
+/* Dropdown container */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #ffffff;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    padding: 10px 0;
+    border-radius: 5px;
+}
+
+.dropdown-content a {
+    color: #003366;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-transform: none;
+    font-weight: 500;
+}
+
+.dropdown-content a:hover {
+    background-color: #fff;
+    color: #003366;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.difference-wrapper {
+    padding: 150px 20px 100px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.difference-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.difference-header h1 {
+    font-size: 3em;
+    color: #003366;
+    margin-bottom: 10px;
+}
+
+.difference-header p {
+    font-size: 1.5em;
+    color: #555;
+}
+
+.difference-content {
+    display: flex;
+    align-items: center;
+    gap: 50px;
+    flex-wrap: wrap;
+}
+
+.difference-image {
+    flex: 1; 
+    text-align: center;
+    opacity: 0;
+    transform: translateX(-100%);
+    transition: transform 1s ease-out, opacity 1s ease-out;
+}
+
+.difference-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 15px;
+}
+
+.difference-text {
+    flex: 1;
+}
+
+.difference-text h2, .difference-text p {
+    opacity: 0;
+    transform: translateX(100%);
+    transition: transform 1s ease-out, opacity 1s ease-out;
+}
+
+.difference-text h2 {
+    font-size: 2em;
+    color: #003366;
+    margin-bottom: 15px;
+}
+
+.difference-text p {
+    font-size: 1.2em;
+    color: #666;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.difference-button {
+    display: inline-block;
+    background: #003366;
+    color: #fff;
+    padding: 15px 30px;
+    border-radius: 5px;
+    text-transform: uppercase;
+    font-size: 1em;
+    letter-spacing: 2px;
+    text-decoration: none;
+    transition: background 0.3s ease;
+}
+
+.difference-button:hover {
+    background: #ffcc00;
+    color: #003366;
+    border: 2px solid #003366;
+}

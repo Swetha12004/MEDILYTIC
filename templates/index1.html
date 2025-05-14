@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XGBoost Classifier</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url("backgrnd.png");
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+                       
+        header {
+            position: absolute;
+            top: 0;
+            padding: 30px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo img {
+            width: auto;
+            height: 100px;
+            padding-right: 100px;
+            margin-left: 50px;
+        }
+
+        .hero-section {
+            width: 100%;
+            padding: 50px 0;
+            background-image: url("Screenshot_2024-1.png");
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin-top: 150px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-image {
+            width: 50%;
+        }
+
+        .hero-image img {
+            max-width: 100%;
+            height: auto;
+            width: 100%;
+            border-radius: 10px;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .hero-image img:hover {
+            transform: scale(1.05);
+        }
+
+        .hero-content {
+            width: 40%;
+            padding: 20px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInContent 1.2s ease-out forwards 0.5s;
+            border-radius: 20px;
+        }
+
+        @keyframes fadeInContent {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-content h1 {
+            font-size: 2.8em;
+            color: #003366;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-content p {
+            font-size: 1.3em;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .text-section {
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 3em;
+            color: #003366;
+            margin: 0;
+        }
+
+        .form-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 50px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            border: 3px solid #003366;
+            width: 50%;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #003366;
+            font-family: "Roboto", sans-serif;
+            font-weight: 800;
+        }
+
+        input[type="text"], input[type="number"], input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #003366;
+            border-radius: 5px;
+            font-family: "Roboto", sans-serif;
+        }
+
+        input[type="submit"] {
+            background-color: #003366;
+            color: white;
+            cursor: pointer;
+            font-weight: 900;
+            font-size: 1.2em;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #ffcc00;
+            color: #fff;
+        }
+
+        .result {
+            background-color: #fff;
+            border: 3px solid #003366;
+            padding: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .result h3 {
+            color: #003366;
+        }
+
+        .info-section {
+    width: 80%;
+    max-width: 1200px;
+    padding: 40px;
+    margin-top: 50px;
+    background-color: #f4faff;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.info-section h2 {
+    font-size: 1.5em;
+    color: #003366;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.info-section p {
+    font-size: 18px;
+    color: #333;
+    line-height: 1.8;
+    margin-bottom: 25px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.info-section img {
+    max-width: 100%;
+    border-radius: 15px;
+    margin-top: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.info-section img:hover {
+    transform: scale(1.05);
+}
+
+.info-section:hover {
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+/* Initial hidden state for animations */
+.form-section, .info-section {
+    opacity: 0;
+    transform: translateY(50px); /* Moves the section down */
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+/* Animation when the section becomes visible */
+.visible {
+    opacity: 1;
+    transform: translateY(0); 
+}
+
+
+</style>
+</head>
+<body>
+    <header>
+        <a href="/" class="logo">
+            <img src="{{ url_for('static', filename='Screenshot_2024-04-23_150319-removebg-preview.png') }}" alt="Your Logo">
+        </a> 
+        <nav class="navigation">
+            <a href="homepage1.html"><i class="fas fa-home"></i> HOME</a>
+            <a href="aboutus2.html"><i class="fas fa-info-circle"></i> ABOUT US</a>
+            <a href="homepage1.html"><i class="fas fa-cogs"></i> SERVICES</a>
+            <a href="homepage.html"><i class="fas fa-info-circle"></i> FEATURES</a>
+            <a href="contact_us.html"><i class="fas fa-envelope"></i> CONTACT US</a>
+        </nav>
+    </header>
+    <section class="hero-section">
+        <div class="hero-image">
+            <img src="{{ url_for('static', filename='people-enjoying-coffee-break.png') }}" alt="Diabetes Health Image">
+        </div>
+        <div class="hero-content">
+            <h1>Discover Your Perfect Meal!</h1>
+            <p>Find foods that are nutritionally similar to the one you enter. By analyzing the nutritional content of the food you provide—such as  calcium, protein, carbohydrate, fiber, sugars, fat—the model identifies and suggests alternative foods with closely matching nutritional values. Whether you're exploring diet options, looking for substitutes, or just curious about nutritionally equivalent foods, this tool offers personalized recommendations to fit your dietary needs.</p>
+        </div>
+    </section>
+
+    <div class="text-section">
+        <h1>FOOD RECOMMENDATION</h1>
+    </div>
+    <div class="form-section"> 
+        <div class="form-container">
+            <h2>ENTER A FOOD ITEM</h2>
+            <form id="foodForm" action="/recommend" method="POST">
+                <label for="foodInput">Food Item:</label>
+                <input type="text" id="foodInput" name="food_item" autocomplete="off" placeholder="Type to search..." required>
+                <input type="submit" value="Find Recommendations">
+            </form>
+            <div id="suggestions"></div>
+            <div class="results">
+                <div class="result">
+                    <h3>YOUR RECOMMENDED FOOD:</h3>
+                    <p id="recommendations">
+                        {% if error_message %}
+                            {{ error_message }}
+                        {% elif recommendations %}
+                            {{ recommendations|join(', ') }}
+                        {% else %}
+                            No results yet.
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    // Create Intersection Observer to trigger animations
+    let observer = new IntersectionObserver(function(entries, observer) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target); // Stop observing once animation is triggered
+            }
+        });
+    }, { threshold: 0.1 });
+
+    // Observe the form section
+    let formSection = document.querySelector('.form-section');
+    observer.observe(formSection);
+
+    // Observe the info section
+    let infoSection = document.querySelector('.info-section');
+    observer.observe(infoSection);
+});
+
+document.getElementById('foodForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    fetch('/recommend', {
+        method: 'POST',
+        body: new FormData(this)
+    })
+    .then(response => response.text())
+    .then(html => {
+        document.open();
+        document.write(html);
+        document.close();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+});
+
+// Add autocomplete functionality
+document.getElementById('foodInput').addEventListener('input', function() {
+    const input = this.value;
+    if (input.length > 0) {
+        fetch(`/suggestions?input=${encodeURIComponent(input)}`)
+            .then(response => response.json())
+            .then(data => {
+                const suggestionsDiv = document.getElementById('suggestions');
+                suggestionsDiv.innerHTML = '';
+                data.forEach(suggestion => {
+                    const div = document.createElement('div');
+                    div.textContent = suggestion;
+                    div.addEventListener('click', function() {
+                        document.getElementById('foodInput').value = this.textContent;
+                        suggestionsDiv.innerHTML = '';
+                    });
+                    suggestionsDiv.appendChild(div);
+                });
+            });
+    } else {
+        document.getElementById('suggestions').innerHTML = '';
+    }
+});
+</script>
+
+</body>
+</html>

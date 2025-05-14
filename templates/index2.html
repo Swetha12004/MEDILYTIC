@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XGBoost Classifier</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url("{{ url_for('static', filename='backgrnd.png') }}");
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url("{{ url_for('static', filename='Screenshot 2024-1.png') }}");
+            background-size: cover;
+        }
+        .navigation a {
+            margin: 0 15px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        header {
+            position: absolute;
+            top: 0;
+            padding: 30px 100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo img {
+            width: auto;
+            height: 100px;
+            padding-right: 100px;
+            margin-left: 50px;
+        }
+
+        .hero-section {
+            width: 100%;
+            padding: 50px 0;
+            background-image: url("{{ url_for('static', filename='Screenshot 2024-1.png') }}");
+            background-repeat:no-repeat;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin-top: 150px;
+        }
+
+        .text-section {
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 3em;
+            color: #003366;
+            margin: 0;
+        }
+
+        .form-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 50px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            border: 3px solid #003366;
+            width: 50%;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #003366;
+            font-family: "Roboto", sans-serif;
+            font-weight: 800;
+        }
+
+        input[type="text"], input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #003366;
+            border-radius: 5px;
+            font-family: "Roboto", sans-serif;
+        }
+
+        input[type="submit"] {
+            background-color: #003366;
+            color: white;
+            cursor: pointer;
+            font-weight: 900;
+            font-size: 1.2em;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #ffcc00;
+            color: #fff;
+        }
+
+        .result {
+            background-color: #fff;
+            border: 3px solid #003366;
+            padding: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .result h3 {
+            color: #003366;
+        }
+
+        .info-section {
+            width: 80%;
+            max-width: 800px;
+            padding: 40px;
+            margin-top: 50px;
+            background-color: #f4faff;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            padding-top:150px
+        }
+
+        .info-section h2 {
+            font-size: 1.5em;
+            color: #003366;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .info-section p {
+            font-size: 18px;
+            color: #333;
+            line-height: 1.8;
+            margin-bottom: 25px;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .info-section img {
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            width:50%;
+        }
+
+        .info-section img:hover {
+            transform: scale(1.05);
+        }
+
+        .info-section:hover {
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Initial hidden state for animations */
+        .form-section, .info-section {
+            opacity: 0;
+            transform: translateY(50px); /* Moves the section down */
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        /* Animation when the section becomes visible */
+        .visible {
+            opacity: 1;
+            transform: translateY(0); 
+        }
+
+        .back-to-home {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .home-button {
+            background-color: #003366;
+            color: white;
+            padding: 30px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-family: "Roboto", sans-serif;
+            font-size: 2em;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .home-button:hover {
+            background-color: #ffcc00;
+            color: white;
+        }
+
+        .ui-autocomplete {
+            max-height: 200px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            z-index: 9999 !important;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="/" class="logo">
+            <img src="{{ url_for('static', filename='Screenshot_2024-04-23_150319-removebg-preview.png') }}" alt="Your Logo">
+        </a> 
+       
+            
+            <nav class="navigation">
+                <a href="homepage1.html"><i class="fas fa-home"></i> HOME</a>
+            <a href="aboutus2.html"><i class="fas fa-info-circle"></i> ABOUT US</a>
+            <a href="homepage1.html"><i class="fas fa-cogs"></i>  SERVICES</a>
+            <a href="homepage1.html"><i class="fas fa-info-circle"></i> FEATURES</a>
+            <a href="contact_us.html"><i class="fas fa-envelope"></i> CONTACT US</a>
+        
+        </nav>
+    </header>
+    <section class="info-section">
+        <h1>Food Suitability</h1>
+        <p>Our Food Suitability Checker helps individuals with blood pressure concerns make smarter dietary choices. Simply enter the name of a food, and our advanced machine learning model will analyze its nutritional content—like sodium, potassium, and fats—to determine if it's suitable for your condition. You'll instantly see whether the food is safe, should be consumed with caution, or should be avoided, giving you quick, reliable guidance for better health management.</p>
+        <img src="https://cdn.prod.website-files.com/622154d5a1d5c02e596f4511/632cbac470d8c2aeb9f10f06_62ec23d246dd296cb0fd2217_Blog_thumb-112.jpeg" alt="Glycemic Index Info">
+    </section>
+    <section class="hero-section">
+        <div class="text-section">
+            <h1>Blood pressure Food Suitability</h1>
+        </div>
+        <div class="form-section"> 
+            <div class="form-container">
+                <form id="predictionForm">
+                    <label for="item_name">Food Name:</label>
+                    <input type="text" id="item_name" name="item_name" required>
+                    <input type="submit" value="PREDICT">
+                </form>
+                <div class="result" id="result">
+                    <h3>PREDICTION RESULT</h3>
+                    <p><strong id="predictionText"></strong></p>
+                </div>
+            </div>  
+        </div>
+    </section>
+
+
+
+    <script>
+        $(document).ready(function() {
+            $("#item_name").autocomplete({
+                source: function(request, response) {
+                    $.getJSON("/autocomplete", {
+                        term: request.term
+                    }, response);
+                },
+                minLength: 2,
+                select: function(event, ui) {
+                    console.log("Selected: " + ui.item.value);
+                }
+            });
+
+            $('#predictionForm').submit(function(event) {
+                event.preventDefault();
+                var itemName = $('#item_name').val();
+                
+                $.ajax({
+                    url: '/predict',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({item_name: itemName}),
+                    success: function(response) {
+                        $('#predictionText').text(response.prediction);
+                    },
+                    error: function(error) {
+                        console.log(error);
+                        $('#predictionText').text('An error occurred. Please try again.');
+                    }
+                });
+            });
+
+            // Create Intersection Observer to trigger animations
+            let observer = new IntersectionObserver(function(entries, observer) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target); // Stop observing once animation is triggered
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            // Observe the form section
+            let formSection = document.querySelector('.form-section');
+            observer.observe(formSection);
+
+            // Observe the info section
+            let infoSection = document.querySelector('.info-section');
+            observer.observe(infoSection);
+        });
+    </script>
+
+</body>
+</html>
